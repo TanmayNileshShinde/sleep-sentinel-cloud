@@ -4,16 +4,16 @@ const twilio = require('twilio');
 
 export default async function handler(req, res) {
   try {
-    // 1. Check if the "Password" (Variable) exists in Vercel
+    // 1. Check if the "Vault" key exists
     if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
-      return res.status(500).send("Error: Missing FIREBASE_SERVICE_ACCOUNT in Vercel settings.");
+      return res.status(500).send("Error: Missing FIREBASE_SERVICE_ACCOUNT in Vercel.");
     }
 
-    // 2. Initialize using the variable, NOT the file
+    // 2. Initialize using the Variable, NOT the file
     if (!getApps().length) {
       const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
       
-      // Fix the formatting of the private key
+      // Fixes the formatting of the private key for Vercel
       if (serviceAccount.private_key) {
         serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
       }

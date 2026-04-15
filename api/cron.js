@@ -4,16 +4,16 @@ const twilio = require('twilio');
 
 export default async function handler(req, res) {
   try {
-    // 1. Check if the "Vault" key exists
+    // 1. Double check the Environment Variable exists
     if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
-      return res.status(500).send("Error: Missing FIREBASE_SERVICE_ACCOUNT in Vercel.");
+      return res.status(500).send("Error: FIREBASE_SERVICE_ACCOUNT is not set in Vercel.");
     }
 
-    // 2. Initialize using the Variable, NOT the file
+    // 2. Initialize using the Environment Variable string
     if (!getApps().length) {
       const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
       
-      // Fixes the formatting of the private key for Vercel
+      // Fix formatting for the private key
       if (serviceAccount.private_key) {
         serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
       }
@@ -27,10 +27,10 @@ export default async function handler(req, res) {
     if (doc.exists) {
       res.status(200).send("✅ SENTINEL ONLINE: Cloud connected successfully.");
     } else {
-      res.status(200).send("⚠️ Connected, but document 'tanmay' was not found.");
+      res.status(200).send("⚠️ Cloud connected, but 'tanmay' document missing in DB.");
     }
   } catch (err) {
     console.error(err);
-    res.status(500).send("Crash Report: " + err.message);
+    res.status(500).send("Runtime Error: " + err.message);
   }
 }

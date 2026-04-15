@@ -1,9 +1,6 @@
 {
   "name": "sleep-sentinel-cloud",
   "version": "1.0.0",
-  "scripts": {
-    "build": "echo 'No build needed for bot'"
-  },
   "dependencies": {
     "firebase-admin": "^11.0.0",
     "twilio": "^4.0.0"

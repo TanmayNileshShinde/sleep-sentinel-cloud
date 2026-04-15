@@ -1,0 +1,145 @@
+/* src/App.css */
+:root {
+  --bg-dark: #020617;
+  --panel-bg: #0f172a;
+  --text-main: #ffffff;
+  --text-muted: #94a3b8;
+  
+  --color-green: #22c55e;
+  --color-yellow: #facc15;
+  --color-red: #dc2626;
+  --color-blue: #2563eb;
+}
+
+body {
+  margin: 0;
+  font-family: 'Courier New', Courier, monospace; /* Monospace for that terminal feel */
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  user-select: none;
+}
+
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.dashboard {
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem;
+  background-color: var(--panel-bg);
+  border-radius: 1.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  border: 1px solid #1e293b;
+  text-align: center;
+}
+
+.title {
+  font-size: 1.8rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  margin: 0 0 0.5rem 0;
+}
+
+.subtitle {
+  color: var(--color-green);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: bold;
+  margin-bottom: 2rem;
+}
+
+.subtitle.offline {
+  color: var(--text-muted);
+}
+
+/* The Big Pulse Button */
+.pulse-button {
+  width: 250px;
+  height: 250px;
+  margin: 0 auto 2.5rem auto;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.5s ease;
+}
+
+.timer-text {
+  font-size: 3.5rem;
+  font-weight: 900;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.reset-label {
+  font-size: 0.8rem;
+  margin-top: 10px;
+  letter-spacing: 0.2em;
+  opacity: 0.9;
+  font-weight: bold;
+}
+
+/* Dynamic States */
+.state-off {
+  background-color: #1e293b;
+  color: #64748b;
+}
+
+.state-green {
+  background-color: var(--color-green);
+  color: #000;
+  box-shadow: 0 0 40px rgba(34, 197, 94, 0.4);
+}
+
+.state-yellow {
+  background-color: var(--color-yellow);
+  color: #000;
+  box-shadow: 0 0 40px rgba(250, 204, 21, 0.6);
+  animation: pulse-warning 1.5s infinite;
+}
+
+.state-red {
+  background-color: var(--color-red);
+  color: #fff;
+  box-shadow: 0 0 50px rgba(220, 38, 38, 0.8);
+}
+
+/* System Toggle Button */
+.toggle-btn {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  font-weight: bold;
+  font-family: inherit;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.btn-arm {
+  background-color: var(--color-blue);
+  color: white;
+  box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
+}
+
+.btn-disarm {
+  background-color: #1e293b;
+  color: var(--text-muted);
+}
+
+/* Keyframe animation for the 45-minute mark */
+@keyframes pulse-warning {
+  0% { transform: scale(1); box-shadow: 0 0 40px rgba(250, 204, 21, 0.6); }
+  50% { transform: scale(1.02); box-shadow: 0 0 60px rgba(250, 204, 21, 0.8); }
+  100% { transform: scale(1); box-shadow: 0 0 40px rgba(250, 204, 21, 0.6); }
+}

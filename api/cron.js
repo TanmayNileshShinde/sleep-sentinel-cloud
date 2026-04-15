@@ -4,16 +4,10 @@ const twilio = require('twilio');
 
 export default async function handler(req, res) {
   try {
-    // 1. Double check the Environment Variable exists
-    if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
-      return res.status(500).send("Error: FIREBASE_SERVICE_ACCOUNT is not set in Vercel.");
-    }
-
-    // 2. Initialize using the Environment Variable string
+    // 1. We grab the key from Vercel's memory, NOT a file
     if (!getApps().length) {
       const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
       
-      // Fix formatting for the private key
       if (serviceAccount.private_key) {
         serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
       }
@@ -23,14 +17,25 @@ export default async function handler(req, res) {
 
     const db = getFirestore();
     const doc = await db.collection("status").doc("tanmay").get();
+    const data = doc.data();
 
-    if (doc.exists) {
-      res.status(200).send("✅ SENTINEL ONLINE: Cloud connected successfully.");
-    } else {
-      res.status(200).send("⚠️ Cloud connected, but 'tanmay' document missing in DB.");
+    // Sentinel Logic
+    const lastCheckIn = data.lastCheckIn.toDate().getTime();
+    const diffInMins = Math.round((Date.now() - lastCheckIn) / 60000);
+
+    if (diffInMins >= 60 && !data.stage1Sent) {
+      const client = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
+      await client.messages.create({
+        body: `🤖 *[Sentinel]* Tanmay has been idle for ${diffInMins}m.`,
+        from: "whatsapp:+14155238886", 
+        to: "whatsapp:+919082601302" 
+      });
+      await db.collection("status").doc("tanmay").update({ stage1Sent: true });
     }
+
+    res.status(200).send(`Sentinel Check Complete. Idle: ${diffInMins}m`);
   } catch (err) {
     console.error(err);
-    res.status(500).send("Runtime Error: " + err.message);
+    res.status(500).send("Cloud Error: " + err.message);
   }
 }

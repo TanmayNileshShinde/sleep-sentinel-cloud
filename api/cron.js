@@ -2,6 +2,12 @@ const { initializeApp, getApps, cert } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
 const twilio = require('twilio');
 
+// 📱 ADD YOUR NUMBERS HERE
+const numbersToNotify = [
+  "whatsapp:+919082601302", // Tanmay's Sunflower 🌻
+  "whatsapp:+91XXXXXXXXXX"  // Add the second number here (Mom/Home) 🏠
+];
+
 // --- VAULT 1: 60 MINUTES (Early Rest) ---
 // Focus: "Tanmay is okay, he's resting, focus on you, he'll text soon."
 const earlyVault = [
@@ -20,7 +26,6 @@ const earlyVault = [
   (mins) => `Tanmay is 100% okay and healthy! 💖 He's been quiet for ${mins}m, just taking a break ☁️ Stay happy and keep doing your thing, Sunflower! He'll text ASAP! 🌻✨🎀🌷`,
   (mins) => `No need to worry, Sunflower! 🌻 Tanmay is just relaxing for ${mins}m 🧸✨ He is safe and sound! Focus on your day and he'll contact you the second he can! 💖🎀🍭🌸`,
   (mins) => `Everything is wonderful with Tanmay! 🥰 He's been away for ${mins}m, just resting up ☁️ Stay focused on your things, Sunflower, and expect a sweet text soon! 🌻✨💖🎀🌷`
-  // (You can copy and slightly vary these to reach 100)
 ];
 
 // --- VAULT 2: 120 MINUTES (Deep Rest) ---
@@ -41,7 +46,6 @@ const deepSleepVault = [
   (mins) => `Confirming Tanmay is in dreamland for ${mins}m 😴✨ He's safe and sound! Focus on your goals today, Sunflower, and wait for his good morning text! 🌻❤️🎀🌸`,
   (mins) => `Tanmay is safe, snug, and officially asleep for ${mins}m 🧸☁️ Don't worry about him at all, Sunflower! Stay happy and he will text you very soon! 🌻✨💖🎀🌷`,
   (mins) => `It's been a long rest for Tanmay (${mins}m), but he is doing great! 😴💖 Stay focused on yourself, Sunflower, and expect his text the moment he wakes! 🌻✨🎀🍭🌸`
-  // (You can copy and slightly vary these to reach 100)
 ];
 
 export default async function handler(req, res) {
@@ -64,25 +68,28 @@ export default async function handler(req, res) {
     const client = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
     let actionTaken = "No action needed";
 
+    // FUNCTION TO SEND TO ALL NUMBERS
+    const broadcast = async (msg) => {
+      for (const number of numbersToNotify) {
+        await client.messages.create({
+          body: msg,
+          from: "whatsapp:+14155238886", 
+          to: number 
+        });
+      }
+    };
+
     if (diffInMins >= 60 && diffInMins < 120 && !data.stage1Sent) {
       const finalMessage = earlyVault[Math.floor(Math.random() * earlyVault.length)](diffInMins);
-      await client.messages.create({
-        body: finalMessage,
-        from: "whatsapp:+14155238886", 
-        to: "whatsapp:+919082601302" 
-      });
+      await broadcast(finalMessage);
       await docRef.update({ stage1Sent: true });
-      actionTaken = "Stage 1 (Early) sent";
+      actionTaken = "Stage 1 (Early) sent to multiple numbers";
     }
     else if (diffInMins >= 120 && !data.stage2Sent) {
       const finalMessage = deepSleepVault[Math.floor(Math.random() * deepSleepVault.length)](diffInMins);
-      await client.messages.create({
-        body: finalMessage,
-        from: "whatsapp:+14155238886", 
-        to: "whatsapp:+919082601302" 
-      });
+      await broadcast(finalMessage);
       await docRef.update({ stage2Sent: true });
-      actionTaken = "Stage 2 (Deep Sleep) sent";
+      actionTaken = "Stage 2 (Deep Sleep) sent to multiple numbers";
     }
 
     res.status(200).send(`Sentinel Check Complete. Idle: ${diffInMins}m. Action: ${actionTaken}`);
